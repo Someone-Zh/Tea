@@ -5,7 +5,6 @@
 import os
 import json
 from SimpleHTTPServer import SimpleHTTPRequestHandler, test
-from enum import IntEnum
 
 ENCODING = "utf-8"
 UPLOAD_DIR = "upload"
@@ -13,7 +12,7 @@ CONTENT_TYPE_FORM = "multipart/form-data"
 CONTENT_TYPE_RAW_JSON = "application/json"
 
 
-class HTTPStatus(IntEnum):
+class HTTPStatus():
 
     def __new__(cls, value, phrase, description=''):
         obj = int.__new__(cls, value)
@@ -45,7 +44,7 @@ class CustomRequestHandler(SimpleHTTPRequestHandler):
         self.send_result({"code": 200})
 
     def send_result(self, result):
-        self.send_response(HTTPStatus.OK)
+        self.send_response(HTTPStatus.OK[0])
         body = json.dumps(result).encode(ENCODING, 'replace')
         self.send_header("Content-Type", CONTENT_TYPE_RAW_JSON)
         self.send_header('Content-Length', str(len(body)))
@@ -115,4 +114,7 @@ class CustomRequestHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
+    UPLOAD_DIR = os.path.join(os.getcwd(), UPLOAD_DIR)
+    if not os.path.exists(UPLOAD_DIR):
+        os.makedirs(UPLOAD_DIR)
     test(HandlerClass=CustomRequestHandler)
